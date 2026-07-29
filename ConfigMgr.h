@@ -44,11 +44,10 @@ public:
 
 	}
 
-	bool LoadConfig(const std::string& config);
-
 private:
-	ConfigMgr() = default;
-
+	ConfigMgr();
+	bool LoadConfig(const std::string& config);
+	void PrintConfig();
 private:
 	std::map<std::string, SectionInfo> config_map_;
 };

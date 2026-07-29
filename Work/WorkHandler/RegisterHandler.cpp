@@ -1,42 +1,18 @@
 #include "RegisterHandler.h"
-#include "HttpConnection.h"
+#include "IoLoop/HttpConnection.h"
 #include "ConfigMgr.h"
-#include "RedisMgr.h"
+#include "Work/Redis/RedisMgr.h"
 #include "PasswordHasher.h"
-#include "MysqlMgr.h"
-#include "ThreadPool.h"
+#include "Work/Mysql/MysqlMgr.h"
+#include "Work/ThreadPool.h"
 
-namespace
-{
-    using namespace std;
-    std::string BuildJsonResponse(
-        ErrorCode error,
-        const string& message,
-        const string& email = {},
-        const string& name = {}
-    )
-    {
-        Json::Value root;
-        root["error"] = static_cast<int>(error);
-        root["message"] = message;
-        if (!email.empty())
-            root["email"] = email;
-        if (!name.empty())
-            root["name"] = name;
 
-        //让字节变得紧凑
-        Json::StreamWriterBuilder writer;
-        writer["indentation"] = "";
-
-        return Json::writeString(writer, root);
-    }
-}
 
 void RegisterHandler::Handler(std::shared_ptr<HttpConnection> connection)
 {
     namespace http = boost::beast::http;
 
-    connection->DeferResponse();
+    //connection->DeferResponse();
 
     /*
      * request_ 只能在当前 IO 线程中读取。
@@ -56,11 +32,11 @@ void RegisterHandler::Handler(std::shared_ptr<HttpConnection> connection)
     try
     {
         ThreadPool::GetInstance()->commit(
-            [body = std::move(body), weakConn]()
+            [body = std::move(body), weakConn,this]()
             {
                 //设置response的响应值
                 http::status responseStatus =
-                    http::status::bad_request;
+                    http::status::ok;
 
                 std::string responseJson;
                 try
@@ -73,7 +49,7 @@ void RegisterHandler::Handler(std::shared_ptr<HttpConnection> connection)
                         || !src_root.isObject())
                     {
                         responseJson =
-                            BuildJsonResponse(
+                            this->BuildJsonResponse(
                                     ErrorCode::Error_Json,
                                 "invalid json"
                             );
@@ -132,7 +108,7 @@ void RegisterHandler::Handler(std::shared_ptr<HttpConnection> connection)
                             || inputCode.empty())
                         {
                             responseJson =
-                                BuildJsonResponse(
+                                this->BuildJsonResponse(
                                         ErrorCode::Error_Json,
                                     "required field is missing"
                                 );
@@ -141,48 +117,44 @@ void RegisterHandler::Handler(std::shared_ptr<HttpConnection> connection)
                         {
                             const std::string redisKey =
                                 "code_" + email;
-
-                            std::string storedCode;
-
-                            const bool found =
-                                RedisMgr::GetInstance()->Get(
+                            const VerifyCodeResult verifyResult =
+                                RedisMgr::GetInstance()->ConsumeVerifyCode(
                                     redisKey,
-                                    storedCode
+                                    inputCode
                                 );
 
-                            if (!found)
+                            if (verifyResult == VerifyCodeResult::RedisError)
                             {
                                 responseJson =
-                                    BuildJsonResponse(
-                                            ErrorCode::Varify_Expired,
-                                        "verify code expired"
+                                    this->BuildJsonResponse(
+                                        ErrorCode::Unknown_Error,
+                                        "redis service error"
                                     );
                             }
-                            else if (storedCode != inputCode)
+                            else if (verifyResult == VerifyCodeResult::CodeMissing)
                             {
-                                /*
-                                 * 不要在日志中打印验证码。
-                                 */
                                 responseJson =
-                                    BuildJsonResponse(
-                                            ErrorCode::Varify_Error,
+                                    this->BuildJsonResponse(
+                                        ErrorCode::Varify_Expired,
+                                        "verify code expired or already used"
+                                    );
+                            }
+                            else if (verifyResult == VerifyCodeResult::CodeMismatch)
+                            {
+                                responseJson =
+                                    this->BuildJsonResponse(
+                                        ErrorCode::Varify_Error,
                                         "verify code is incorrect"
                                     );
                             }
-                            else // 验证码匹配,存数据库
+                            else
                             {
-                                /*
-                                 * 密码哈希可能比较耗时，
-                                 * 当前代码已经在线程池工作线程中。
-                                 */
+                                // 验证码正确，并且 Lua 已经将它删除
                                 const std::string passwordHash =
-                                    PasswordHasher::HashPassword(
-                                        password
-                                    );
+                                    PasswordHasher::HashPassword(password);
 
                                 const ErrorCode code =
-                                    MysqlMgr::GetInstance()
-                                    ->RegisterUser(
+                                    MysqlMgr::GetInstance()->RegisterUser(
                                         user,
                                         email,
                                         passwordHash
@@ -191,71 +163,40 @@ void RegisterHandler::Handler(std::shared_ptr<HttpConnection> connection)
                                 switch (code)
                                 {
                                 case ErrorCode::Success:
-                                {
-                                    responseStatus =
-                                        http::status::ok;
-
                                     responseJson =
-                                        BuildJsonResponse(
+                                        this->BuildJsonResponse(
                                             code,
                                             "register success",
                                             email,
                                             user
                                         );
-
-                                    /*
-                                     * 只有注册成功后才删除验证码。
-                                     */
-                                    RedisMgr::GetInstance()->Del(
-                                        redisKey
-                                    );
-
                                     break;
-                                }
 
                                 case ErrorCode::User_Exist:
-                                {
-                                    responseStatus =
-                                        http::status::conflict;
-
                                     responseJson =
-                                        BuildJsonResponse(
+                                        this->BuildJsonResponse(
                                             code,
                                             "user already exists"
                                         );
-
                                     break;
-                                }
 
                                 case ErrorCode::Mysql_Pool_Timeout:
-                                {
-                                    responseStatus =
-                                        http::status::service_unavailable;
-
                                     responseJson =
-                                        BuildJsonResponse(
+                                        this->BuildJsonResponse(
                                             code,
                                             "database busy"
                                         );
-
                                     break;
-                                }
 
                                 default:
-                                {
-                                    responseStatus =
-                                        http::status::
-                                        internal_server_error;
-
                                     responseJson =
-                                        BuildJsonResponse(
+                                        this->BuildJsonResponse(
                                             code,
                                             "database error"
                                         );
                                     break;
                                 }
-                                }
-
+                            
                             }
                         }
                     }
@@ -271,7 +212,7 @@ void RegisterHandler::Handler(std::shared_ptr<HttpConnection> connection)
                         http::status::internal_server_error;
 
                     responseJson =
-                        BuildJsonResponse(
+                        this->BuildJsonResponse(
                             ErrorCode::Unknown_Error,
                             "internal server error"
                         );

@@ -29,21 +29,6 @@ public:
     LogicSystem(const LogicSystem&) = delete;
     LogicSystem& operator=(const LogicSystem&) = delete;
 
-    // 注册普通 GET 回调。
-    void RegisterGet(
-        const std::string& url,
-        ConnectionCallback callback);
-
-    // 分发 GET 请求。
-    bool HandleGet(
-        const std::string& url,
-        std::shared_ptr<HttpConnection> connection);
-
-    // 注册普通 POST 回调。
-    void RegisterPost(
-        const std::string& url,
-        ConnectionCallback callback);
-
     // 注册面向对象的 POST Handler。
     void RegisterPostHandler(
         const std::string& url,
@@ -58,8 +43,6 @@ private:
     LogicSystem();
 
 private:
-    std::map<std::string, ConnectionCallback> get_handlers_;
-    std::map<std::string, ConnectionCallback> post_handlers_;
 
     std::map<std::string, std::unique_ptr<RequestHandler>>
         post_request_handlers_;

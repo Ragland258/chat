@@ -17,7 +17,7 @@ void Server::start()
 					return;
 				}
 				//创建新连接
-				std::cout << "socket accept" << std::endl;
+				//std::cout << "socket accept" << std::endl;
 				new_connection->Start();
 				
 				//继续监听

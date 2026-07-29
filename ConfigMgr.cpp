@@ -1,6 +1,8 @@
 #include "ConfigMgr.h"
 #include <algorithm>
+#include <boost/dll/runtime_symbol_info.hpp>
 #include <cctype>
+#include <vector>
 
 namespace
 {
@@ -24,15 +26,99 @@ namespace
             key.find("key") != std::string::npos;
     }
 }
+
+ConfigMgr::ConfigMgr()
+{
+    LoadConfig("config.ini");
+    PrintConfig();
+}
+
+void ConfigMgr::PrintConfig()
+{
+
+    // Print loaded config for debugging, but never expose secrets.
+    for (const auto& section_entry : config_map_)
+    {
+        const auto& section_name = section_entry.first;
+        auto section_config = section_entry.second;
+        std::cout << "[" << section_name << "]" << std::endl;
+        for (const auto& key_value : section_config.section_data_)
+        {
+            if (IsSensitiveConfigKey(key_value.first))
+            {
+                std::cout
+                    << key_value.first
+                    << "=<hidden, len="
+                    << key_value.second.size()
+                    << ">"
+                    << std::endl;
+            }
+            else
+            {
+                std::cout
+                    << key_value.first
+                    << "="
+                    << key_value.second
+                    << std::endl;
+            }
+        }
+    }
+}
+
 bool ConfigMgr::LoadConfig(const std::string& config)
 {
     try
     {
-        boost::filesystem::path current_path = boost::filesystem::current_path();
-        boost::filesystem::path config_path = current_path / config;
+        std::vector<boost::filesystem::path> config_paths;
+
+        boost::system::error_code location_error;
+        const boost::filesystem::path executable_path =
+            boost::dll::program_location(location_error);
+
+        if (!location_error)
+        {
+            config_paths.push_back(
+                executable_path.parent_path() / config
+            );
+        }
+
+        const boost::filesystem::path current_config_path =
+            boost::filesystem::current_path() / config;
+
+        if (config_paths.empty()
+            || config_paths.front() != current_config_path)
+        {
+            config_paths.push_back(current_config_path);
+        }
+
+        boost::filesystem::path config_path;
+
+        for (const auto& candidate : config_paths)
+        {
+            if (boost::filesystem::is_regular_file(candidate))
+            {
+                config_path = candidate;
+                break;
+            }
+        }
+
+        if (config_path.empty())
+        {
+            std::cout << "Config file not found. Checked:" << std::endl;
+            for (const auto& candidate : config_paths)
+            {
+                std::cout << "  " << candidate.string() << std::endl;
+            }
+            return false;
+        }
 
         boost::property_tree::ptree pt;
         boost::property_tree::read_ini(config_path.string(), pt);
+
+        std::cout
+            << "Loaded config: "
+            << config_path.string()
+            << std::endl;
 
         config_map_.clear();
 
@@ -52,33 +138,6 @@ bool ConfigMgr::LoadConfig(const std::string& config)
             }
 
             config_map_[section_name] = section_info;
-        }
-        // Print loaded config for debugging, but never expose secrets.
-        for (const auto& section_entry : config_map_)
-        {
-            const auto& section_name = section_entry.first;
-            auto section_config = section_entry.second;
-            std::cout << "[" << section_name << "]" << std::endl;
-            for (const auto& key_value : section_config.section_data_)
-            {
-                if (IsSensitiveConfigKey(key_value.first))
-                {
-                    std::cout
-                        << key_value.first
-                        << "=<hidden, len="
-                        << key_value.second.size()
-                        << ">"
-                        << std::endl;
-                }
-                else
-                {
-                    std::cout
-                        << key_value.first
-                        << "="
-                        << key_value.second
-                        << std::endl;
-                }
-            }
         }
 
         return true;

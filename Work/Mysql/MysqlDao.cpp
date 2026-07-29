@@ -17,11 +17,6 @@ MysqlPool::MysqlPool()
 {
     auto config = ConfigMgr::GetInstance();
 
-    if (!config->LoadConfig("config.ini"))
-    {
-        throw std::runtime_error("failed to load config.ini");
-    }
-
     const std::string host =
         (*config)["Mysql"]["Host"];
 
@@ -503,6 +498,7 @@ MysqlDao::MysqlDao(std::shared_ptr<MysqlPool> pool)
     }
 }
 
+
 RegisterUserDbResult MysqlDao::RegisterUser(
     const std::string& name,
     const std::string& email,
@@ -510,7 +506,8 @@ RegisterUserDbResult MysqlDao::RegisterUser(
 {
     MysqlConnectionGuard connection(
         pool_,
-        pool_->BorrowConnection());
+        pool_->BorrowConnection()
+    );
 
     if (!connection)
     {
@@ -521,59 +518,52 @@ RegisterUserDbResult MysqlDao::RegisterUser(
     {
         std::unique_ptr<sql::PreparedStatement> statement(
             connection->prepareStatement(
-                "CALL reg_user(?, ?, ?, @result)"));
+                "INSERT INTO users(name, email, pwd) "
+                "VALUES (?, ?, ?)"
+            )
+        );
 
         statement->setString(1, name);
         statement->setString(2, email);
         statement->setString(3, passwordHash);
 
-        statement->execute();
+        const int affectedRows =
+            statement->executeUpdate();
 
-        std::unique_ptr<sql::Statement> resultStatement(
-            connection->createStatement());
-
-        std::unique_ptr<sql::ResultSet> resultSet(
-            resultStatement->executeQuery(
-                "SELECT @result AS result"));
-
-        if (!resultSet || !resultSet->next())
+        if (affectedRows != 1)
         {
-            return RegisterUserDbResult::InvalidProcedureResult;
+            return RegisterUserDbResult::DatabaseError;
         }
 
-        const int result =
-            resultSet->getInt("result");
-
-        switch (result)
-        {
-        case 0:
-            return RegisterUserDbResult::Success;
-
-        case 1:
-            return RegisterUserDbResult::UserAlreadyExists;
-
-        default:
-            return RegisterUserDbResult::InvalidProcedureResult;
-        }
+        return RegisterUserDbResult::Success;
     }
-    catch (const sql::SQLException& e)
+    catch (const sql::SQLException& exception)
     {
         std::cerr
             << "RegisterUser SQL error: "
-            << e.what()
+            << exception.what()
             << ", error code: "
-            << e.getErrorCode()
+            << exception.getErrorCode()
             << ", SQL state: "
-            << e.getSQLState()
+            << exception.getSQLState()
             << '\n';
+
+        /*
+         * MySQL 1062：
+         * 唯一索引冲突，用户名或邮箱已经存在。
+         */
+        if (exception.getErrorCode() == 1062)
+        {
+            return RegisterUserDbResult::UserAlreadyExists;
+        }
 
         return RegisterUserDbResult::DatabaseError;
     }
-    catch (const std::exception& e)
+    catch (const std::exception& exception)
     {
         std::cerr
             << "RegisterUser error: "
-            << e.what()
+            << exception.what()
             << '\n';
 
         return RegisterUserDbResult::DatabaseError;

@@ -1,7 +1,7 @@
 #include "const.h"
-#include "Server.h"
+#include "IoLoop/Server.h"
 #include "ConfigMgr.h"
-#include "RedisMgr.h"
+#include "Work/Redis/RedisMgr.h"
 #include <sodium.h>
 void TestSodium()
 {
@@ -45,19 +45,9 @@ int main()
 
 		auto config_mgr = ConfigMgr::GetInstance();
 
-		if (!config_mgr->LoadConfig("config.ini"))
-		{
-			std::cout << "load config.ini failed" << std::endl;
-			return -1;
-		}
-
 		auto gate_port = (*config_mgr)["GateServer"]["Port"];
 		auto verify_host = (*config_mgr)["VarifyServer"]["Host"];
 		auto verify_port = (*config_mgr)["VarifyServer"]["Port"];
-
-		std::cout << "gate_port: " << gate_port << std::endl;
-		std::cout << "verify_host: " << verify_host << std::endl;
-		std::cout << "verify_port: " << verify_port << std::endl;
 
 		boost::asio::io_context ioc;
 		boost::asio::signal_set signals(ioc, SIGINT, SIGTERM);//生成信号集，监听SIGINT和SIGTERM信号

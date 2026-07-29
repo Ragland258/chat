@@ -5,7 +5,7 @@
 class RegisterHandler final:public RequestHandler
 {
 public:
-	friend class HttpConnection;
+
 	void Handler(
 		std::shared_ptr<HttpConnection> connection) override;
 };

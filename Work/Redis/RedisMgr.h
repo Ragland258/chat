@@ -4,6 +4,14 @@
 #include "Singleton.h"
 #include <hiredis.h>
 
+enum class VerifyCodeResult : int
+{
+    RedisError = -2,
+    CodeMismatch = -1,
+    CodeMissing = 0,
+    Success = 1
+};
+
 struct RedisReplyMgr
 {
     RedisReplyMgr()
@@ -160,6 +168,12 @@ public:
     bool ExistsKey(const std::string& key);
     void Close();
 
+    VerifyCodeResult ConsumeVerifyCode(
+        const std::string& key,
+        const std::string& inputCode
+    );
+
 private:
     RedisMgr();
 };
+

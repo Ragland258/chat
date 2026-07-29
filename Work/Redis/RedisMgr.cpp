@@ -15,6 +15,111 @@ void RedisMgr::Close()
     RedisPool::GetInstance()->Close();
 }
 
+VerifyCodeResult RedisMgr::ConsumeVerifyCode(
+    const std::string& key,
+    const std::string& inputCode
+)
+{
+    static const std::string luaScript = R"lua(
+local storedCode = redis.call("GET", KEYS[1])
+
+if not storedCode then
+    return 0
+end
+
+if storedCode ~= ARGV[1] then
+    return -1
+end
+
+redis.call("DEL", KEYS[1])
+
+return 1
+)lua";
+
+    RedisConGuard guard(
+        RedisPool::GetInstance()->BorrowConnect()
+    );
+
+    auto* connection = guard.get();
+
+    if (!connection)
+    {
+        std::cerr
+            << "[ConsumeVerifyCode] no available Redis connection"
+            << std::endl;
+
+        return VerifyCodeResult::RedisError;
+    }
+
+    RedisReplyMgr reply;
+
+    /*  EVAL
+    *   Lua脚本
+    *   1个Redis key
+    *   key
+    *    用户输入的验证码
+    */
+    reply = reinterpret_cast<redisReply*>(
+        redisCommand(
+            connection,
+            "EVAL %b 1 %b %b",
+
+            luaScript.data(),
+            static_cast<size_t>(luaScript.size()),
+
+            key.data(),
+            static_cast<size_t>(key.size()),
+
+            inputCode.data(),
+            static_cast<size_t>(inputCode.size())
+        )
+        );
+
+    if (!reply)
+    {
+        std::cerr
+            << "[ConsumeVerifyCode] Redis returned no reply"
+            << std::endl;
+
+        return VerifyCodeResult::RedisError;
+    }
+
+    if (reply->type == REDIS_REPLY_ERROR)
+    {
+        std::cerr
+            << "[ConsumeVerifyCode] Lua error: "
+            << (reply->str ? reply->str : "unknown error")
+            << std::endl;
+
+        return VerifyCodeResult::RedisError;
+    }
+
+    if (reply->type != REDIS_REPLY_INTEGER)
+    {
+        std::cerr
+            << "[ConsumeVerifyCode] unexpected reply type: "
+            << reply->type
+            << std::endl;
+
+        return VerifyCodeResult::RedisError;
+    }
+
+    switch (reply->integer)
+    {
+    case 1:
+        return VerifyCodeResult::Success;
+
+    case 0:
+        return VerifyCodeResult::CodeMissing;
+
+    case -1:
+        return VerifyCodeResult::CodeMismatch;
+
+    default:
+        return VerifyCodeResult::RedisError;
+    }
+}
+
 bool RedisMgr::Connect(const std::string& host, int port)
 {
     auto* context = RedisPool::GetInstance()->BorrowConnect();
@@ -323,13 +428,13 @@ redisContext* RedisPool::BorrowConnect()
 
         auto* context = connections_.front();
         connections_.pop();
-        std::cout << "[RedisPool] borrow, remaining: " << connections_.size() << std::endl;
+        //std::cout << "[RedisPool] borrow, remaining: " << connections_.size() << std::endl;
         lk.unlock();
 
         if (CheckConnection(context))
             return context;
 
-        std::cout << "[RedisPool] borrowed connection is not alive, reconnect" << std::endl;
+        //std::cout << "[RedisPool] borrowed connection is not alive, reconnect" << std::endl;
         redisFree(context);
         auto* new_context = CreateConnection();
         if (new_context)
@@ -364,7 +469,7 @@ void RedisPool::ReturnConnect(redisContext* context)
     }
 
     connections_.push(context);
-    std::cout << "[RedisPool] return, remaining: " << connections_.size() << std::endl;
+    //std::cout << "[RedisPool] return, remaining: " << connections_.size() << std::endl;
     cv_.notify_one();
 }
 
@@ -385,7 +490,7 @@ RedisPool::RedisPool()
     : b_stop_(false), pool_size_(0)
 {
     auto config = ConfigMgr::GetInstance();
-    config->LoadConfig("config.ini");
+
     host_ = (*config)["RedisServer"]["Host"];
     port_ = (*config)["RedisServer"]["Port"];
     pool_size_ = atoi((*config)["RedisServer"]["size"].c_str());
@@ -399,7 +504,7 @@ RedisPool::RedisPool()
         if (context)
         {
             connections_.push(context);
-            std::cout << "[RedisPool] connection " << connections_.size() << "/" << pool_size_ << " created" << std::endl;
+            //std::cout << "[RedisPool] connection " << connections_.size() << "/" << pool_size_ << " created" << std::endl;
         }
     }
     std::cout << "[RedisPool] init " << connections_.size() << "/" << pool_size_ << " connections" << std::endl;

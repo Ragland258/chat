@@ -55,10 +55,10 @@ enum class ErrorCode
 	Mysql_Result_Error = 1011,
 
 	//¹şÏ£
-	Password_Hash_Error ,//¹şÏ£¼ÓÃÜ´íÎó
+	Password_Hash_Error = 1012,//¹şÏ£¼ÓÃÜ´íÎó
 
 	//Î´Öª´íÎó
-	Unknown_Error
+	Unknown_Error = 1013
 };
 
 class ConfigMgr;
