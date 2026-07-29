@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Server.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HttpConnection.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="LogicSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="gateServer_main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="generated\message.grpc.pb.cc">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="generated\message.pb.cc">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VerifyGrpcClient.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="IOSPool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RedisMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MysqlMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PasswordHasher.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MysqlDao.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RegisterHandler.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Server.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="HttpConnection.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="const.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="LogicSystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="generated\message.grpc.pb.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="generated\message.pb.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VerifyGrpcClient.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IOSPool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RedisMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PasswordHasher.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlDao.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RegisterHandler.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RequestHandler.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="generate_grpc.bat">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="proto\message.proto">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="config.ini">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+</Project>
