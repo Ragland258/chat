@@ -1,6 +1,6 @@
 ﻿#include "HttpConnection.h"
 #include <iostream>
-#include "LogicSystem.h"
+#include "Work/WorkRoute/LogicSystem.h"
 HttpConnection::HttpConnection(tcp::socket&& socket) :socket_(std::move(socket))
 {
 }

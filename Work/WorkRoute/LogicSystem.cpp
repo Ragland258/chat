@@ -1,9 +1,9 @@
 #include "LogicSystem.h"
 
-#include "HttpConnection.h"
-#include "RegisterHandler.h"
-#include "RequestHandler.h"
-#include "VerifyGrpcClient.h"
+#include "IoLoop/HttpConnection.h"
+#include "Work/WorkHandler/RegisterHandler.h"
+#include "Work/WorkHandler/RequestHandler.h"
+#include "Work/Grpc/VerifyGrpcClient.h"
 
 #include <boost/beast/core/buffers_to_string.hpp>
 #include <boost/beast/core/ostream.hpp>

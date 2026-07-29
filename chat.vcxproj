@@ -82,7 +82,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)generated;D:\download\windows-redis\deps\hiredis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)generated;D:\download\windows-redis\deps\hiredis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;4251;4267;4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -100,7 +100,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)generated;D:\download\windows-redis\deps\hiredis;D:\mysql-connector-c++-9.6.0-winx64\include;D:\mysql-connector-c++-9.6.0-winx64\include\jdbc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)generated;D:\download\windows-redis\deps\hiredis;D:\mysql-connector-c++-9.6.0-winx64\include;D:\mysql-connector-c++-9.6.0-winx64\include\jdbc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;4251;4267;4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -115,7 +115,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\mysql-connector-c++-9.6.0-winx64\include;D:\mysql-connector-c++-9.6.0-winx64\include\jdbc;$(ProjectDir)generated;D:\download\windows-redis\deps\hiredis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);D:\mysql-connector-c++-9.6.0-winx64\include;D:\mysql-connector-c++-9.6.0-winx64\include\jdbc;$(ProjectDir)generated;D:\download\windows-redis\deps\hiredis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;4251;4267;4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -139,7 +139,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\mysql-connector-c++-9.6.0-winx64\include;D:\mysql-connector-c++-9.6.0-winx64\include\jdbc;$(ProjectDir)generated;D:\download\windows-redis\deps\hiredis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);D:\mysql-connector-c++-9.6.0-winx64\include;D:\mysql-connector-c++-9.6.0-winx64\include\jdbc;$(ProjectDir)generated;D:\download\windows-redis\deps\hiredis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;4251;4267;4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -155,38 +155,40 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ConfigMgr.cpp" />
-    <ClCompile Include="HttpConnection.cpp" />
-    <ClCompile Include="IOSPool.cpp" />
-    <ClCompile Include="LogicSystem.cpp" />
+    <ClCompile Include="IoLoop\HttpConnection.cpp" />
+    <ClCompile Include="IoLoop\IOSPool.cpp" />
+    <ClCompile Include="Work\WorkRoute\LogicSystem.cpp" />
     <ClCompile Include="generated\message.grpc.pb.cc" />
     <ClCompile Include="generated\message.pb.cc" />
     <ClCompile Include="gateServer_main.cpp" />
-    <ClCompile Include="MysqlDao.cpp" />
-    <ClCompile Include="MysqlMgr.cpp" />
-    <ClCompile Include="PasswordHasher.cpp" />
-    <ClCompile Include="RedisMgr.cpp" />
-    <ClCompile Include="RegisterHandler.cpp" />
-    <ClCompile Include="Server.cpp" />
-    <ClCompile Include="VerifyGrpcClient.cpp" />
+    <ClCompile Include="Work\Mysql\MysqlDao.cpp" />
+    <ClCompile Include="Work\Mysql\MysqlMgr.cpp" />
+    <ClCompile Include="Work\WorkHandler\PasswordHasher.cpp" />
+    <ClCompile Include="Work\Redis\RedisMgr.cpp" />
+    <ClCompile Include="Work\WorkHandler\RegisterHandler.cpp" />
+    <ClCompile Include="IoLoop\Server.cpp" />
+    <ClCompile Include="Work\WorkHandler\VarifyHandler.cpp" />
+    <ClCompile Include="Work\Grpc\VerifyGrpcClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConfigMgr.h" />
-    <ClInclude Include="HttpConnection.h" />
-    <ClInclude Include="IOSPool.h" />
-    <ClInclude Include="LogicSystem.h" />
+    <ClInclude Include="IoLoop\HttpConnection.h" />
+    <ClInclude Include="IoLoop\IOSPool.h" />
+    <ClInclude Include="Work\WorkRoute\LogicSystem.h" />
     <ClInclude Include="generated\message.grpc.pb.h" />
     <ClInclude Include="generated\message.pb.h" />
-    <ClInclude Include="MysqlDao.h" />
-    <ClInclude Include="MysqlMgr.h" />
-    <ClInclude Include="PasswordHasher.h" />
-    <ClInclude Include="RedisMgr.h" />
-    <ClInclude Include="RegisterHandler.h" />
-    <ClInclude Include="RequestHandler.h" />
-    <ClInclude Include="Server.h" />
+    <ClInclude Include="Work\Mysql\MysqlDao.h" />
+    <ClInclude Include="Work\Mysql\MysqlMgr.h" />
+    <ClInclude Include="Work\WorkHandler\PasswordHasher.h" />
+    <ClInclude Include="Work\Redis\RedisMgr.h" />
+    <ClInclude Include="Work\WorkHandler\RegisterHandler.h" />
+    <ClInclude Include="Work\WorkHandler\RequestHandler.h" />
+    <ClInclude Include="IoLoop\Server.h" />
     <ClInclude Include="const.h" />
     <ClInclude Include="Singleton.h" />
-    <ClInclude Include="ThreadPool.h" />
-    <ClInclude Include="VerifyGrpcClient.h" />
+    <ClInclude Include="Work\ThreadPool.h" />
+    <ClInclude Include="Work\WorkHandler\VarifyHandler.h" />
+    <ClInclude Include="Work\Grpc\VerifyGrpcClient.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config.ini" />

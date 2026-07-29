@@ -1,7 +1,7 @@
 #include "const.h"
-#include "Server.h"
+#include "IoLoop/Server.h"
 #include "ConfigMgr.h"
-#include "RedisMgr.h"
+#include "Work/Redis/RedisMgr.h"
 #include <sodium.h>
 void TestSodium()
 {

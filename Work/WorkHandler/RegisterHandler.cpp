@@ -1,10 +1,10 @@
 #include "RegisterHandler.h"
-#include "HttpConnection.h"
+#include "IoLoop/HttpConnection.h"
 #include "ConfigMgr.h"
-#include "RedisMgr.h"
+#include "Work/Redis/RedisMgr.h"
 #include "PasswordHasher.h"
-#include "MysqlMgr.h"
-#include "ThreadPool.h"
+#include "Work/Mysql/MysqlMgr.h"
+#include "Work/ThreadPool.h"
 
 namespace
 {
