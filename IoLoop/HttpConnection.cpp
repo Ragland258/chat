@@ -51,7 +51,7 @@ namespace
         );
     }
 
-    inline void printDispatch(const std::string& postUrl,const std::string& fullUrl)
+    inline void printDispatch(const std::string& postUrl, const std::string& fullUrl)
     {
         std::cout << "[dispatch] POST url: "
             << postUrl
@@ -60,7 +60,7 @@ namespace
             << std::endl;
     }
 
-    inline void printRequest(const std::string& method,const std::string& rawTarget,const std::string& fullUrl )
+    inline void printRequest(const std::string& method, const std::string& rawTarget, const std::string& fullUrl)
     {
         std::cout
             << "[request] method: "
@@ -399,9 +399,9 @@ void HttpConnection::HandleRequest()
 
 
     /*
-    * 
+    *
     *    printRequest(request_.method_string(),rawTarget,fullUrl);
-    * 
+    *
     */
 
     if (request_.method() == http::verb::post)
@@ -415,9 +415,9 @@ void HttpConnection::HandleRequest()
                 rawTarget
             );
         /*
-        * 
+        *
         * printDispatch(postUrl,fullUrl);
-        * 
+        *
         */
 
         /*
