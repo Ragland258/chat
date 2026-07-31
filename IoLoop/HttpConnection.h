@@ -12,7 +12,7 @@ class LogicSystem;
 class HttpConnection
     : public std::enable_shared_from_this<HttpConnection>
 {
-    friend class LogicSystem;
+	friend class LogicSystem;
 
 public:
     explicit HttpConnection(tcp::socket&& socket);
@@ -21,7 +21,7 @@ public:
         boost::asio::io_context& ioc
     );
 
-    void Start();
+	void Start();
 
     tcp::socket& GetSocket()
     {
@@ -53,16 +53,17 @@ public:
      * 实际 response_ 修改和网络写入会被投递回
      * socket 对应的 Asio executor。
      */
-    void SendJsonResponse(
-        http::status status,
+	void SendJsonResponse(
+		http::status status,
         std::string jsonBody
     );
+
 
 private:
     /**
      * 启动连接超时检查。
      */
-    void CheckDeadline();
+	void CheckDeadline();
 
     /**
      * 发送当前 response_。
@@ -77,7 +78,7 @@ private:
     /**
      * 分发当前 HTTP 请求。
      */
-    void HandleRequest();
+	void HandleRequest();
 
     /**
      * 根据 Host 请求头和 target 构造完整 URL，
@@ -86,7 +87,7 @@ private:
     std::string GetFullUrl() const;
 
 private:
-    tcp::socket socket_;
+	tcp::socket socket_;
 
     beast::flat_buffer buffer_;
 
@@ -102,7 +103,7 @@ private:
     boost::asio::steady_timer deadline_{
         socket_.get_executor(),
         std::chrono::seconds(30)
-    };
+};
 
     /**
      * 防止同一个请求重复发送响应。
