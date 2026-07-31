@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+
 #include "const.h"
 
 #include <atomic>
@@ -63,7 +64,7 @@ private:
     /**
      * 启动连接超时检查。
      */
-	void CheckDeadline();
+    void CheckDeadline();
 
     /**
      * 发送当前 response_。
@@ -78,7 +79,7 @@ private:
     /**
      * 分发当前 HTTP 请求。
      */
-	void HandleRequest();
+    void HandleRequest();
 
     /**
      * 根据 Host 请求头和 target 构造完整 URL，
@@ -87,7 +88,7 @@ private:
     std::string GetFullUrl() const;
 
 private:
-	tcp::socket socket_;
+    tcp::socket socket_;
 
     beast::flat_buffer buffer_;
 
