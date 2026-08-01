@@ -1,6 +1,7 @@
 #include "LoginHandler.h"
 #include "IoLoop/HttpConnection.h"
 #include "PasswordHasher.h"
+#include "../Grpc/StatusGrpcClient.h"
 void LoginHandler::Handler(std::shared_ptr<HttpConnection> connection)
 {
 	namespace http = boost::beast::http;
@@ -80,14 +81,37 @@ void LoginHandler::Handler(std::shared_ptr<HttpConnection> connection)
 									}
 									else // 生成token成功
                                     {
-										// 调用grpc查找可用的服务器
+										// 调用grpc查找可用的服务器,传入email和token,返回可用的服务器列表
+										const auto& statusReply = StatusGrpcClient::GetInstance()->GetChatServer(email, token);
 
-                                        responseJson =
-                                            this->BuildJsonResponse(
-                                                ErrorCode::Success,
-                                                "login success",
-                                                token
-                                            );
+                                        // 检查错误码
+                                        if (statusReply.error() !=
+                                            static_cast<int>(
+                                                ErrorCode::Success))
+                                        {
+                                            responseJson =
+                                                BuildJsonResponse(
+                                                    static_cast<ErrorCode>(
+                                                        statusReply.error()
+                                                        ),
+                                                    "get chat server failed"
+                                                );
+
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            // 返回可用的服务器列表
+                                            responseJson =
+                                                this->BuildJsonResponse(
+                                                    ErrorCode::Success,
+                                                    "login success",
+                                                    email,
+                                                    token,
+                                                    statusReply.ip(),
+                                                    std::to_string(statusReply.port())
+												);
+                                        }
                                     }
                                 }
                                 else // 密码错误

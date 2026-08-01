@@ -1,6 +1,7 @@
 #pragma once
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
+#include <boost/uuid/uuid.hpp>
 #include <memory>
 #include <iostream>	
 #include <functional>
@@ -55,6 +56,11 @@ enum class ErrorCode
 	Mysql_Result_Error = 2012,
 	//哈希
 	Password_Hash_Error = 3013,//哈希加密错误
+
+	// statusServer
+	Token_Expired = 4001,//token过期
+	Token_Error = 4002,//token错误
+	Server_Empty = 4003,//服务器列表为空
 
 	//未知错误
 	Unknown_Error = 1014

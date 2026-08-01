@@ -73,5 +73,8 @@ LogicSystem::LogicSystem()
         "/reset",
 		std::make_unique<ResetHandler>());
 
-
+	// POST /login 交给 LoginHandler 处理。
+    RegisterPostHandler(
+        "/login",
+		std::make_unique<LoginHandler>());
 }

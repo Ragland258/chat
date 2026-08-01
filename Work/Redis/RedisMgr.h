@@ -164,6 +164,14 @@ public:
         const std::string& email,
         int expireSeconds = 30 * 60
     );
+
+    // —È÷§token
+    bool VerifyLoginToken(
+        const std::string& email,
+        const std::string& token
+	);
+
+
     void Close();
     ~RedisMgr();
 private:

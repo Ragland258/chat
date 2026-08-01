@@ -506,6 +506,19 @@ return 1
 
 }
 
+bool RedisMgr::VerifyLoginToken(const std::string& email, const std::string& token)
+{
+    std::string storedToken;
+    if(!Get(email, storedToken))
+    {
+        std::cerr
+            << "[VerifyLoginToken] failed to get token from Redis"
+            << std::endl;
+        return false;
+	}
+	return storedToken == token;
+}
+
 bool RedisMgr::Connect(const std::string& host, int port)
 {
     auto* context = RedisPool::GetInstance()->BorrowConnect();

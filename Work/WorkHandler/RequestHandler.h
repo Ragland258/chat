@@ -44,6 +44,10 @@ protected:
             root["email"] = email;
         if (!token.empty())
             root["token"] = token;
+        if(!host.empty())
+			root["host"] = host;
+		if (!port.empty())
+			root["port"] = port;
 
         //ÈÃ×Ö½Ú±äµÃ½ô´Õ
         Json::StreamWriterBuilder writer;
