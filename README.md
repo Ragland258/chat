@@ -1,5 +1,5 @@
 # 全栈聊天项目
-
+---暂时未完成
 多服务全栈聊天项目：Qt 客户端 + GateServer（HTTP/gRPC 网关）+ StatusServer（在线状态/路由）+ VerifyServer（邮箱验证码），ChatServer 预留。
 
 ## 目录结构
