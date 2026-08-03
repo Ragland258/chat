@@ -10,10 +10,10 @@ if defined VCPKG_ROOT (
 
 set "PROTOC=%VCPKG_DIR%\installed\x64-windows\tools\protobuf\protoc.exe"
 set "GRPC_PLUGIN=%VCPKG_DIR%\installed\x64-windows\tools\grpc\grpc_cpp_plugin.exe"
-set "PROTO_DIR=%PROJECT_DIR%proto"
+set "PROTO_DIR=%PROJECT_DIR%..\proto"
 set "PROTO_FILE=%PROTO_DIR%\message.proto"
-set "GATE_OUT=%PROJECT_DIR%generated"
-set "STATUS_OUT=%PROJECT_DIR%VarifyServer\StatusServer"
+set "GATE_OUT=%PROJECT_DIR%..\server\GateServer\generated"
+set "STATUS_OUT=%PROJECT_DIR%..\server\StatusServer"
 
 if not exist "%PROTOC%" (
     echo [ERROR] protoc.exe not found: %PROTOC%
@@ -46,7 +46,7 @@ if errorlevel 1 exit /b 1
   "%PROTO_FILE%"
 if errorlevel 1 exit /b 1
 
-copy /Y "%PROTO_FILE%" "%PROJECT_DIR%VarifyServer\message.proto" >nul
+copy /Y "%PROTO_FILE%" "%PROJECT_DIR%..\server\VerifyServer\message.proto" >nul
 copy /Y "%PROTO_FILE%" "%STATUS_OUT%\message.proto" >nul
 
 echo [SUCCESS] protobuf and gRPC sources regenerated.

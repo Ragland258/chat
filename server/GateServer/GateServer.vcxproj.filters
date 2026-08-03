@@ -160,16 +160,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="generate_grpc.bat">
+    <None Include="..\..\scripts\generate_grpc.bat">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="proto\message.proto">
+    <None Include="..\..\proto\message.proto">
       <Filter>资源文件</Filter>
     </None>
     <None Include="config.ini">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="consume_verify_code.lua">
+    <None Include="..\..\scripts\consume_verify_code.lua">
       <Filter>Work\Redis</Filter>
     </None>
   </ItemGroup>

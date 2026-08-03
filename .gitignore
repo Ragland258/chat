@@ -26,10 +26,12 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+build/
+**/build/
 
 # Local secrets and runtime configuration
 config.ini
-VarifyServer/config.json
+server/*/config.json
 .env
 .env.*
 !.env.example

@@ -201,9 +201,9 @@ if exist "$(ProjectDir)config.ini" copy /Y "$(ProjectDir)config.ini" "$(OutDir)c
   </ItemGroup>
   <ItemGroup>
     <None Include="config.ini" />
-    <None Include="consume_verify_code.lua" />
-    <None Include="generate_grpc.bat" />
-    <None Include="proto\message.proto" />
+    <None Include="..\..\scripts\consume_verify_code.lua" />
+    <None Include="..\..\scripts\generate_grpc.bat" />
+    <None Include="..\..\proto\message.proto" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
